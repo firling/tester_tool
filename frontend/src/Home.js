@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
-import { withRouter } from "react-router-dom";
 import axios from "axios";
 import './App.css';
 
@@ -25,21 +24,13 @@ class Home extends Component {
       })
   }
 
-  logout = (history) => {
-    localStorage.setItem("token", "");
-    this.setState({redirect: true})
-  }
-
   render() {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
     }
-    const Button = withRouter(({ history }) => (
-      <button className="button is-danger" onClick={() => this.logout(history)}>Log Out</button>
-    ))
     return (
-      <div>
-        <Button />
+      <div className="hero-body">
+        <h1 className="title is-1">HOME</h1>
       </div>
     );
   }
