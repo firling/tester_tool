@@ -58,21 +58,21 @@ class Header extends Component {
                     </a>
 
                     <div className="navbar-item has-dropdown is-hoverable">
-                      <a className="navbar-link" style={window.location.pathname.includes("/admin") ? {color: "#209CEE"} : {}}>
+                      <Link className="navbar-link" style={window.location.pathname == "/createuser" || window.location.pathname == "/manageuser" || window.location.pathname == "/userlogs" ? {color: "#209CEE"} : {}}>
                         Admin
-                      </a>
+                      </Link>
 
                       <div className="navbar-dropdown is-dark">
-                        <a className="navbar-item">
+                        <Link to="/createuser" className="navbar-item" style={window.location.pathname == "/createuser" ? {color: "#209CEE"} : {}}>
                           Create User
-                        </a>
-                        <a className="navbar-item">
+                        </Link>
+                        <Link to="/manageuser" className="navbar-item" style={window.location.pathname == "/manageuser" ? {color: "#209CEE"} : {}}>
                           Manage User
-                        </a>
+                        </Link>
                         <hr className="navbar-divider" />
-                        <a className="navbar-item">
+                        <Link to="/userlogs" className="navbar-item" style={window.location.pathname == "/userlogs" ? {color: "#209CEE"} : {}}>
                           User Logs
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>

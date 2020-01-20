@@ -48,10 +48,50 @@ async function createServer () {
     console.log('500 Internal error: ' + err.message);
   });
 
+  app.post('/changePassword', withAuth, async function(req, res) {
+    const { oldPassword, newPassword } = req.body;
+    const { username } = req;
+    var result = await makeDbQuery(`select * from login where username=\'${username}\'`)
+
+    if(!result[0]) {
+      res.status(401)
+        .json({
+        error: 'An error occured, please relog.'
+      });
+    } else {
+      if (result[0].password != sha1(oldPassword)) {
+        res.status(401)
+          .json({
+          error: 'The old password value and your current password doesn\'t match.'
+        });
+      } else {
+        var query = `update login set password=\'${sha1(newPassword)}\' where id=${result[0].id}`
+        var result = await makeDbQuery(query)
+        res.status(200)
+          .json({
+          success: true
+        });
+      }
+    }
+
+  })
+
   app.post('/register', async function(req, res) {
-    const { username, password } = req.body;
-    const query = `insert into login (username, password) values('${username}', '${sha1(password)}')`
+    const { username, password, rank, admin } = req.body;
+    const querySelect = `select * from login where username=\'${username}\'`
+    var resultSelect = await makeDbQuery(querySelect);
+    if (resultSelect[0]){
+      res.status(401)
+        .json({
+        error: 'Username already exists.'
+      });
+    }
+    const query = `insert into login (username, password, rank_id, is_admin) values('${username}', '${sha1(password)}', ${rank}, ${admin})`
     var result = await makeDbQuery(query);
+    res.status(200)
+        .json({
+          success: true
+        });
   });
 
   app.post('/authenticate', async function(req, res) {
@@ -86,8 +126,37 @@ async function createServer () {
 
   })
 
+  app.get('/getAllRank', async function(req, res) {
+    var query = `select * from rank`;
+    var result = await makeDbQuery(query);
+    res.json(result);
+  })
+
   app.post('/checkToken', withAuth, function(req, res) {
-    console.log("test")
+    res.sendStatus(200);
+  });
+
+  app.get('/getAllUsers', async function(req, res) {
+    var query = `select id, username, rank_id, is_admin, banned from login`;
+    var result = await makeDbQuery(query);
+    res.json(result);
+  })
+
+  app.post('/resetPassword', async function(req, res) {
+    const {id} = req.body;
+    var query = `update login set password=\'${sha1("changeit")}\' where id=${id}`;
+    await makeDbQuery(query);
+    res.json({"success": true});
+  })
+
+  app.post('/banAcc', async function(req, res) {
+    const {id, value} = req.body;
+    var query = `update login set banned=${value} where id=${id}`;
+    await makeDbQuery(query);
+    res.json({"success": true});
+  })
+
+  app.post('/checkToken', withAuth, function(req, res) {
     res.sendStatus(200);
   });
 

@@ -12,6 +12,7 @@ class ChangePassword extends Component {
     newPassword: "",
     newPasswordAgain: "",
     messageError: "",
+    messageSuccess: "",
   }
 
   async componentDidMount () {
@@ -42,6 +43,23 @@ class ChangePassword extends Component {
     } else {
       this.setState({ messageError: "" })
     }
+
+    axios.post(`${this.state.startUrl}/changePassword`, {
+      token: localStorage.token,
+      oldPassword: this.state.oldPassword,
+      newPassword: this.state.newPassword
+    })
+    .then( res => {
+      if (res.status === 200) {
+        this.setState({ messageSuccess: "Your password has been updated!" })
+      } else {
+        this.setState({ messageSuccess: res.data.error })
+      }
+    })
+    .catch( err => {
+      this.setState({ messageError: err.response.data.error })
+    })
+
   }
 
   render() {
@@ -80,10 +98,16 @@ class ChangePassword extends Component {
             </div>
 
             {
-              this.state.messageError ? (
+              this.state.messageError || this.state.messageSuccess ? (
                 <div className="field">
                   <div className="control">
-                    <p className="subtitle has-text-danger">{this.state.messageError}</p>
+                    {
+                      this.state.messageError ? (
+                        <p className="subtitle has-text-danger">{this.state.messageError}</p>
+                      ) : (
+                        <p className="subtitle has-text-success">{this.state.messageSuccess}</p>
+                      )
+                    }
                   </div>
                 </div>
               ) : null

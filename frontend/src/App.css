@@ -18,3 +18,30 @@
 .label{
   color: #fff!important;
 }
+
+.is_admin label:hover{
+  color: rgb(32, 156, 238);
+}
+
+.manage_user {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.manage_user td, .manage_user th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.manage_user tr:nth-child(even){background-color: #4A4A4A;}
+
+.manage_user tr:hover {background-color: #2b2b2b;}
+
+.manage_user th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #3298dc;
+  color: white;
+}

@@ -17,15 +17,14 @@ class Login extends Component {
     }
 
   async componentDidMount () {
-    fetch(`${this.state.startUrl}/checkToken`)
-      .then( res => {
-        if (res.status === 200) {
-          this.setState({ redirect: true })
-        }
-      })
-      .catch(err => {
-
-      })
+    axios.post(`${this.state.startUrl}/checkToken`, {
+      token: localStorage.token
+    })
+    .then( res => {
+      if (res.status === 200) {
+        this.setState({ redirect: true })
+      }
+    })
   }
 
   submit = (e) => {
