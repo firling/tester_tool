@@ -8,11 +8,27 @@ class Home extends Component {
   state = {
     startUrl: "http://localhost:3001",
     redirect: false,
-    rank: {},
+    rank: [],
+    rankObj: {},
     users: [],
     usersNew: {},
     messageSuccess: "",
     messageError: "",
+  }
+
+  getAllUser = () => {
+    axios.get(`${this.state.startUrl}/getAllUsers`)
+      .then( res => {
+        var obj = {}
+        res.data.forEach(elt => {
+          elt.is_updating = false;
+          obj[elt.id] = elt
+        })
+        this.setState({ users: res.data, usersNew: obj })
+      })
+      .catch( err => {
+        console.log("Error while getting users.")
+      })
   }
 
   async componentDidMount () {
@@ -30,28 +46,17 @@ class Home extends Component {
 
     axios.get(`${this.state.startUrl}/getAllRank`)
       .then( res => {
+        this.setState({ rank: res.data })
         var obj = {}
         res.data.forEach(elt => {
-          obj[elt.id] = elt.name
+          obj[elt.id] = elt
         })
-        this.setState({ rank: obj })
+        this.setState({ rank: res.data, rankObj: obj })
       })
       .catch( err => {
         console.log("Error while getting ranks")
       })
-
-    axios.get(`${this.state.startUrl}/getAllUsers`)
-      .then( res => {
-        var obj = {}
-        res.data.forEach(elt => {
-          elt.is_updating = false;
-          obj[elt.id] = elt
-        })
-        this.setState({ users: res.data, usersNew: obj })
-      })
-      .catch( err => {
-        console.log("Error while getting users.")
-      })
+      this.getAllUser();
   }
 
   update = (id) => {
@@ -85,14 +90,31 @@ class Home extends Component {
       messageSuccess: "",
       messageError: ""
     })
-    axios.post(`${this.state.startUrl}/banAcc`, {id, value})
+    var valu = value == 1 ? 0 : 1
+    axios.post(`${this.state.startUrl}/banAcc`, {id, value: valu})
       .then( res => {
-        this.setState({messageSuccess: `The user with the id ${id} has been ${value == 0 ? "un": ""}banned.`})
+        this.setState({messageSuccess: `The user with the id ${id} has been ${value == 1 ? "un": ""}banned.`})
         var usersNew = this.state.usersNew
         console.log(value)
         usersNew[id].banned = value == 0 ? 1 : 0
         console.log(usersNew[id].banned)
         this.setState({usersNew})
+      })
+      .catch( err => {
+        this.setState({messageError: `An error occured, error: ${err}`})
+      })
+  }
+
+  updateAcc = (id) => {
+    axios.post(`${this.state.startUrl}/updateAcc`, {
+      id,
+      username: this.state.usersNew[id].username,
+      rank_id: this.state.usersNew[id].rank_id,
+      is_admin: this.state.usersNew[id].is_admin
+    })
+      .then( res => {
+        this.setState({messageSuccess: `The user with the id ${id} has been updated`})
+        this.getAllUser();
       })
       .catch( err => {
         this.setState({messageError: `An error occured, error: ${err}`})
@@ -106,7 +128,7 @@ class Home extends Component {
     return (
       <div className="hero-body">
         <div className="container">
-          <div className="column ">
+          <div className="column">
             <div className="field">
               <div className="control">
                 {
@@ -132,9 +154,35 @@ class Home extends Component {
               {
                 this.state.users.map((elt, index) => (
                   <tr>
-                    <td>{elt.id}</td>
-                    <td>{elt.username}</td>
-                    <td id={elt.rank_id}>{this.state.rank[elt.rank_id]}</td>
+                    <td>
+                      {
+                        !this.state.usersNew[elt.id].is_updating ? elt.id : (
+                          <input id={elt.id} className="input" value={this.state.usersNew[elt.id].id}/>
+                        )
+                      }
+                    </td>
+                    <td>
+                      {
+                        !this.state.usersNew[elt.id].is_updating ? elt.username : (
+                          <input id={elt.id} className="input" value={this.state.usersNew[elt.id].username}/>
+                        )
+                      }
+                    </td>
+                    <td>
+                      {
+                        !this.state.usersNew[elt.id].is_updating ? this.state.rankObj[this.state.usersNew[elt.id].rank_id].name : (
+                          <div class="select is-info">
+                            <select onChange={this.changeRank}>
+                              {
+                                this.state.rank.map((elem, index) => (
+                                  <option id={elem.id} selected={elem.id == this.state.usersNew[elt.id].rank_id}>{elem.name}</option>
+                                ))
+                              }
+                            </select>
+                          </div>
+                        )
+                      }
+                    </td>
                     <td>{elt.is_admin}</td>
                     <td>
                       {
