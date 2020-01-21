@@ -105,7 +105,7 @@ class Home extends Component {
       })
   }
 
-  updateAcc = (id) => {
+  saveAcc = (id) => {
     axios.post(`${this.state.startUrl}/updateAcc`, {
       id,
       username: this.state.usersNew[id].username,
@@ -119,6 +119,24 @@ class Home extends Component {
       .catch( err => {
         this.setState({messageError: `An error occured, error: ${err}`})
       })
+  }
+
+  changeUsernameUpdating = (e, id) => {
+    var { usersNew } = this.state
+    usersNew[id].username = e.target.value
+    this.setState({usersNew});
+  }
+
+  changeRankUpdating = (e, id) => {
+    var { usersNew } = this.state
+    usersNew[id].rank_id = e.target.childNodes[e.target.selectedIndex].id
+    this.setState({usersNew});
+  }
+
+  changeAdminUpdating = (e, id) => {
+    var { usersNew } = this.state
+    usersNew[id].Admin = e.target.value
+    this.setState({usersNew});
   }
 
   render() {
@@ -154,17 +172,11 @@ class Home extends Component {
               {
                 this.state.users.map((elt, index) => (
                   <tr>
-                    <td>
-                      {
-                        !this.state.usersNew[elt.id].is_updating ? elt.id : (
-                          <input id={elt.id} className="input" value={this.state.usersNew[elt.id].id}/>
-                        )
-                      }
-                    </td>
+                    <td>{elt.id}</td>
                     <td>
                       {
                         !this.state.usersNew[elt.id].is_updating ? elt.username : (
-                          <input id={elt.id} className="input" value={this.state.usersNew[elt.id].username}/>
+                          <input className="input" value={this.state.usersNew[elt.id].username} onChange={(e) => this.changeUsernameUpdating(e, elt.id)}/>
                         )
                       }
                     </td>
@@ -172,7 +184,7 @@ class Home extends Component {
                       {
                         !this.state.usersNew[elt.id].is_updating ? this.state.rankObj[this.state.usersNew[elt.id].rank_id].name : (
                           <div class="select is-info">
-                            <select onChange={this.changeRank}>
+                            <select onChange={(e) => this.changeRankUpdating(e, elt.id)}>
                               {
                                 this.state.rank.map((elem, index) => (
                                   <option id={elem.id} selected={elem.id == this.state.usersNew[elt.id].rank_id}>{elem.name}</option>
@@ -183,13 +195,19 @@ class Home extends Component {
                         )
                       }
                     </td>
-                    <td>{elt.is_admin}</td>
+                    <td>
+                      {
+                        !this.state.usersNew[elt.id].is_updating ? elt.is_admin : (
+                          <input className="input" value={this.state.usersNew[elt.id].is_admin} onChange={(e) => this.changeAdminUpdating(e, elt.id)}/>
+                        )
+                      }
+                    </td>
                     <td>
                       {
                         !this.state.usersNew[elt.id].is_updating ? (
-                          <button className="button is-info" id={elt.id} onClick={() => this.update(elt.id)}>Update</button>
+                          <button className="button is-info" onClick={() => this.update(elt.id)}>Update</button>
                         ) : (
-                          <button className="button is-info" id={elt.id}>Save</button>
+                          <button className="button is-info" onClick={() => this.saveAcc(elt.id)}>Save</button>
                         )
                       }
                     </td>
