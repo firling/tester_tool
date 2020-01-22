@@ -4,24 +4,14 @@ const cors = require('cors');
 const http = require('http');
 const sha1 = require('sha1')
 const withAuth = require('./middleware');
+const withAuthAdmin = require('./middlewareAdmin');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const database = require('./database.js');
+const makeDbQuery = require("./makeDbQuery.js");
 
 const PORT = 3001
-
-function makeDbQuery(query) {
-  return new Promise(function(resolve, reject) {
-    database.db.query(query, function (err, rows, fields){
-      if (err) {
-        console.log("error while executing the query : " + err)
-        return reject(err);
-      }
-      resolve(rows);
-    })
-  })
-}
 
 async function createServer () {
   await database.connect().connect();
@@ -156,7 +146,18 @@ async function createServer () {
     res.json({"success": true});
   })
 
+  app.post('/saveAcc', async function(req, res) {
+    const {id, username, rank_id, is_admin} = req.body;
+    var query = `update login set username=\'${username}\', rank_id=${rank_id}, is_admin=${is_admin} where id=${id}`;
+    await makeDbQuery(query);
+    res.json({"success": true});
+  })
+
   app.post('/checkToken', withAuth, function(req, res) {
+    res.sendStatus(200);
+  });
+
+  app.post('/checkTokenAdmin', withAuthAdmin, function(req, res) {
     res.sendStatus(200);
   });
 

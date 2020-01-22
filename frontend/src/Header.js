@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect, Link } from 'react-router-dom';
+import axios from "axios";
 import './App.css';
 import Firling from './img/firling.png'
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -7,7 +8,25 @@ import { StickyContainer, Sticky } from 'react-sticky';
 class Header extends Component {
 
   state = {
+    startUrl : "http://localhost:3001",
     redirect: false,
+    is_admin: false
+  }
+
+  async componentDidMount () {
+    axios.post(`${this.state.startUrl}/checkTokenAdmin`, {
+      token: localStorage.token
+    })
+      .then( res => {
+        if (res.status !== 200) {
+          this.setState({ is_admin: false })
+        } else {
+          this.setState({ is_admin: true })
+        }
+      })
+      .catch(err => {
+        this.setState({ is_admin: false })
+      })
   }
 
   logout = () => {
@@ -19,7 +38,6 @@ class Header extends Component {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
     }
-    console.log(window.location.pathname)
     return (
       <div className="hero-head">
         <Sticky>
@@ -57,24 +75,29 @@ class Header extends Component {
                       Create Post
                     </a>
 
-                    <div className="navbar-item has-dropdown is-hoverable">
-                      <Link className="navbar-link" style={window.location.pathname == "/createuser" || window.location.pathname == "/manageuser" || window.location.pathname == "/userlogs" ? {color: "#209CEE"} : {}}>
-                        Admin
-                      </Link>
+                    {
+                      this.state.is_admin ? (
+                        <div className="navbar-item has-dropdown is-hoverable">
+                          <Link className="navbar-link" style={window.location.pathname == "/createuser" || window.location.pathname == "/manageuser" || window.location.pathname == "/userlogs" ? {color: "#209CEE"} : {}}>
+                            Admin
+                          </Link>
 
-                      <div className="navbar-dropdown is-dark">
-                        <Link to="/createuser" className="navbar-item" style={window.location.pathname == "/createuser" ? {color: "#209CEE"} : {}}>
-                          Create User
-                        </Link>
-                        <Link to="/manageuser" className="navbar-item" style={window.location.pathname == "/manageuser" ? {color: "#209CEE"} : {}}>
-                          Manage User
-                        </Link>
-                        <hr className="navbar-divider" />
-                        <Link to="/userlogs" className="navbar-item" style={window.location.pathname == "/userlogs" ? {color: "#209CEE"} : {}}>
-                          User Logs
-                        </Link>
-                      </div>
-                    </div>
+                          <div className="navbar-dropdown is-dark">
+                            <Link to="/createuser" className="navbar-item" style={window.location.pathname == "/createuser" ? {color: "#209CEE"} : {}}>
+                              Create User
+                            </Link>
+                            <Link to="/manageuser" className="navbar-item" style={window.location.pathname == "/manageuser" ? {color: "#209CEE"} : {}}>
+                              Manage User
+                            </Link>
+                            <hr className="navbar-divider" />
+                            <Link to="/userlogs" className="navbar-item" style={window.location.pathname == "/userlogs" ? {color: "#209CEE"} : {}}>
+                              User Logs
+                            </Link>
+                          </div>
+                        </div>
+                      ) : null
+                    }
+
                   </div>
 
                   <div className="navbar-end">

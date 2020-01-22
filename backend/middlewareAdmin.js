@@ -3,7 +3,7 @@ const secret = 'protestertoolsecretconnectiontokenAAAABBCDQS';
 const database = require('./database.js');
 const makeDbQuery = require("./makeDbQuery.js");
 
-const withAuth = function(req, res, next) {
+const withAuthAdmin = function(req, res, next) {
   const token =
       req.body.token ||
       req.query.token ||
@@ -23,11 +23,15 @@ const withAuth = function(req, res, next) {
         var result = await makeDbQuery(`select * from login where username=\'${username}\'`)
         if (!result[0]){
           res.status(401).send('Unauthorized: Your Username Changed.');
+        } else {
+          if (result[0].is_admin != 1) {
+            res.status(401).send('Unauthorized: You\'re not an admin.');
+          }
+          next();
         }
-        next();
       }
     });
   }
 }
 
-module.exports = withAuth;
+module.exports = withAuthAdmin;

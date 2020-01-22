@@ -32,7 +32,7 @@ class Home extends Component {
   }
 
   async componentDidMount () {
-    axios.post(`${this.state.startUrl}/checkToken`, {
+    axios.post(`${this.state.startUrl}/checkTokenAdmin`, {
       token: localStorage.token
     })
       .then( res => {
@@ -65,8 +65,9 @@ class Home extends Component {
     this.setState({usersNew})
   }
 
-  cancel = (id) => {
+  cancel = async (id) => {
     var usersNew = this.state.usersNew
+    await this.getAllUser();
     usersNew[id].is_updating = false
     this.setState({usersNew})
   }
@@ -106,7 +107,7 @@ class Home extends Component {
   }
 
   saveAcc = (id) => {
-    axios.post(`${this.state.startUrl}/updateAcc`, {
+    axios.post(`${this.state.startUrl}/saveAcc`, {
       id,
       username: this.state.usersNew[id].username,
       rank_id: this.state.usersNew[id].rank_id,
@@ -135,7 +136,7 @@ class Home extends Component {
 
   changeAdminUpdating = (e, id) => {
     var { usersNew } = this.state
-    usersNew[id].Admin = e.target.value
+    usersNew[id].is_admin = e.target.value
     this.setState({usersNew});
   }
 
@@ -183,7 +184,7 @@ class Home extends Component {
                     <td>
                       {
                         !this.state.usersNew[elt.id].is_updating ? this.state.rankObj[this.state.usersNew[elt.id].rank_id].name : (
-                          <div class="select is-info">
+                          <div className="select is-info">
                             <select onChange={(e) => this.changeRankUpdating(e, elt.id)}>
                               {
                                 this.state.rank.map((elem, index) => (
@@ -197,8 +198,17 @@ class Home extends Component {
                     </td>
                     <td>
                       {
-                        !this.state.usersNew[elt.id].is_updating ? elt.is_admin : (
-                          <input className="input" value={this.state.usersNew[elt.id].is_admin} onChange={(e) => this.changeAdminUpdating(e, elt.id)}/>
+                        !this.state.usersNew[elt.id].is_updating ? elt.is_admin == 1 ? "Yes" : "No" : (
+                          <div className="control is_admin">
+                            <label className="radio">
+                              <input type="radio" name="answer" value="1" checked={this.state.usersNew[elt.id].is_admin == 1} onChange={(e) =>this.changeAdminUpdating(e, elt.id)} />
+                              Yes
+                            </label>
+                            <label className="radio">
+                              <input type="radio" name="answer" value="0" checked={this.state.usersNew[elt.id].is_admin == 0} onChange={(e) =>this.changeAdminUpdating(e, elt.id)} />
+                              No
+                            </label>
+                          </div>
                         )
                       }
                     </td>

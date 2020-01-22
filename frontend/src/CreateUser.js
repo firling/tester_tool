@@ -18,7 +18,7 @@ class CreateUser extends Component {
   }
 
   async componentDidMount () {
-    axios.post(`${this.state.startUrl}/checkToken`, {
+    axios.post(`${this.state.startUrl}/checkTokenAdmin`, {
       token: localStorage.token
     })
       .then( res => {
