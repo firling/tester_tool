@@ -71,9 +71,9 @@ class Header extends Component {
                       My Posts
                     </a>
 
-                    <a className="navbar-item" style={window.location.pathname == "/createpost" ? {color: "#209CEE"} : {}}>
+                    <Link className="navbar-item" to="/createpost" style={window.location.pathname == "/createpost" ? {color: "#209CEE"} : {}}>
                       Create Post
-                    </a>
+                    </Link>
 
                     {
                       this.state.is_admin ? (

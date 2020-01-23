@@ -10,6 +10,7 @@ import ChangePassword from "./ChangePassword";
 import Title from "./Title";
 import CreateUser from "./CreateUser";
 import ManageUser from "./ManageUser";
+import CreatePost from "./CreatePost";
 
 class App extends Component {
 
@@ -83,6 +84,18 @@ class App extends Component {
                 <Header />
                 <Title title="Manage User"/>
                 <ManageUser />
+              </section>
+            </StickyContainer>
+          </div>
+        )} />
+
+        <Route path='/createpost' component={() => (
+          <div>
+            <StickyContainer>
+              <section className="hero is-dark is-fullheight">
+                <Header />
+                <Title title="Create A New Post"/>
+                <CreatePost />
               </section>
             </StickyContainer>
           </div>
