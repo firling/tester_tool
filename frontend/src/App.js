@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import { StickyContainer, Sticky } from 'react-sticky';
 import axios from "axios";
 import './App.css';
@@ -11,6 +11,7 @@ import Title from "./Title";
 import CreateUser from "./CreateUser";
 import ManageUser from "./ManageUser";
 import CreatePost from "./CreatePost";
+import MyPosts from "./MyPosts";
 
 class App extends Component {
 
@@ -96,6 +97,18 @@ class App extends Component {
                 <Header />
                 <Title title="Create A New Post"/>
                 <CreatePost />
+              </section>
+            </StickyContainer>
+          </div>
+        )} />
+
+        <Route path='/myposts' component={() => (
+          <div>
+            <StickyContainer>
+              <section className="hero is-dark is-fullheight">
+                <Header />
+                <Title title="My Posts"/>
+                <MyPosts />
               </section>
             </StickyContainer>
           </div>

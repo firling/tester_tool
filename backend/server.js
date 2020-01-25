@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const http = require('http');
 const sha1 = require('sha1')
+const fs = require('fs');
 const withAuth = require('./middleware');
 const withAuthAdmin = require('./middlewareAdmin');
 const jwt = require('jsonwebtoken');
@@ -10,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const database = require('./database.js');
 const makeDbQuery = require("./makeDbQuery.js");
+const ImgB64 = require("./file/img.json");
 
 const PORT = 3001
 
@@ -151,6 +153,38 @@ async function createServer () {
     var query = `update login set username=\'${username}\', rank_id=${rank_id}, is_admin=${is_admin} where id=${id}`;
     await makeDbQuery(query);
     res.json({"success": true});
+  })
+
+  app.post('/createPost', withAuth, async function(req, res) {
+    const {image, title, message} = req.body;
+    const {username} = req
+    const resIdUser = await makeDbQuery(`select id from login where username=\'${username}\'`);
+    const id = resIdUser[0].id;
+
+    const query = `insert into post (title, message, user_id) values (\'${title}\', \'${message}\', \'${id}\')`
+
+    await makeDbQuery(query)
+
+    const lastId = await makeDbQuery(`select last_insert_id()`);
+
+    ImgB64[lastId[0]["last_insert_id()"]] = image;
+
+    await fs.writeFile("./file/img.json", JSON.stringify(ImgB64), (err) => { if (err) {throw err} })
+
+    res.json({"success": true});
+  });
+
+  app.post('/getAllPost', withAuth, async function(req, res) {
+    const {username} = req;
+    const resId = await makeDbQuery(`select id from login where username=\'${username}\'`);
+    const userId = resId[0].id;
+    const result = await makeDbQuery(`select * from post where user_id=${userId}`);
+    const arrResult = [];
+    result.forEach((elem, i) => {
+      elem.image = ImgB64[elem.id]
+      arrResult.push(elem);
+    });
+    res.json({"result": arrResult});
   })
 
   app.post('/checkToken', withAuth, function(req, res) {

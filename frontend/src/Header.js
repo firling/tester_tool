@@ -67,9 +67,9 @@ class Header extends Component {
                       Latest Posts
                     </a>
 
-                    <a className="navbar-item" style={window.location.pathname == "/myposts" ? {color: "#209CEE"} : {}}>
+                    <Link className="navbar-item" to="/myposts" style={window.location.pathname == "/myposts" ? {color: "#209CEE"} : {}}>
                       My Posts
-                    </a>
+                    </Link>
 
                     <Link className="navbar-item" to="/createpost" style={window.location.pathname == "/createpost" ? {color: "#209CEE"} : {}}>
                       Create Post

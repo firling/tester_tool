@@ -16,11 +16,10 @@ const withAuth = function(req, res, next) {
   } else {
     jwt.verify(token, secret, async function(err, decoded) {
       if (err) {
-
         console.log("invalid token");
       } else {
-        var username = decoded.username;
-        var result = await makeDbQuery(`select * from login where username=\'${username}\'`)
+        req.username = decoded.username;
+        var result = await makeDbQuery(`select * from login where username=\'${req.username}\'`)
         if (!result[0]){
           res.status(401).send('Unauthorized: Your Username Changed.');
         }

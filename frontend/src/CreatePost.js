@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import axios from "axios";
 import './App.css';
 import { Gluejar } from '@charliewilco/gluejar'
-import blobToBase64 from 'blob-to-base64';
 
 class CreatePost extends Component {
 
@@ -11,6 +10,10 @@ class CreatePost extends Component {
     startUrl: "http://localhost:3001",
     redirect: false,
     image: "",
+    message: "",
+    title: "",
+    messageSuccess: "",
+    messageError: "",
   }
 
   async componentDidMount () {
@@ -47,6 +50,43 @@ class CreatePost extends Component {
     this.setState({image: ""})
   }
 
+  cancel = (e) => {
+    this.setState({
+      image: "",
+      message: "",
+      title: ""
+    })
+  }
+
+  createPost = (e) => {
+    this.setState({messageSuccess: "", messageError: ""})
+    axios.post(`${this.state.startUrl}/createPost`, {
+      token: localStorage.token,
+      image: this.state.image,
+      message: this.state.message,
+      title: this.state.title
+    })
+      .then( res => {
+        this.setState({messageSuccess: "A new post has been added!"})
+        this.setState({
+          image: "",
+          message: "",
+          title: ""
+        })
+      })
+      .catch( err => {
+        this.setState({messageError: `An error occured while creating the post: ${err}`})
+      })
+  }
+
+  changeTitle = (e) => {
+    this.setState({title: e.target.value})
+  }
+
+  changeMessage = (e) => {
+    this.setState({message: e.target.value})
+  }
+
   render() {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
@@ -59,14 +99,14 @@ class CreatePost extends Component {
             <div className="field">
               <label className="label">Title</label>
               <div className="control">
-                <input className="input" type="text" placeholder="Text input" />
+                <input className="input" type="text" placeholder="Title" value={this.state.title} onChange={this.changeTitle}/>
               </div>
             </div>
 
             <div className="field">
               <label className="label">Message</label>
               <div className="control">
-                <textarea className="textarea" placeholder="Textarea" onPaste={this.onPaste}></textarea>
+                <textarea className="textarea" placeholder="Message" value={this.state.message} onChange={this.changeMessage} onPaste={this.onPaste}></textarea>
               </div>
             </div>
 
@@ -97,10 +137,22 @@ class CreatePost extends Component {
 
             <div className="field is-grouped">
               <div className="control">
-                <button className="button is-link">Create</button>
+                <button className="button is-link" onClick={this.createPost}>Create</button>
               </div>
               <div className="control">
-                <button className="button is-link is-light">Cancel</button>
+                <button className="button is-link is-light" onClick={this.cancel}>Cancel</button>
+              </div>
+            </div>
+
+            <div className="field is-grouped">
+              <div className="control">
+                {
+                  this.state.messageError ? (
+                    <p className="subtitle has-text-danger">{this.state.messageError}</p>
+                  ) : (
+                    <p className="subtitle has-text-success">{this.state.messageSuccess}</p>
+                  )
+                }
               </div>
             </div>
 
