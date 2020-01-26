@@ -174,7 +174,7 @@ async function createServer () {
     res.json({"success": true});
   });
 
-  app.post('/getAllPost', withAuth, async function(req, res) {
+  app.post('/getAllPostUser', withAuth, async function(req, res) {
     const {username} = req;
     const resId = await makeDbQuery(`select id from login where username=\'${username}\'`);
     const userId = resId[0].id;
@@ -185,7 +185,18 @@ async function createServer () {
       arrResult.push(elem);
     });
     res.json({"result": arrResult});
-  })
+  });
+
+  app.get('/getPost', async function(req, res) {
+    const {id} = req.query;
+    const result = await makeDbQuery(`select * from post where id=${id}`);
+
+    var post = result[0];
+
+    post["image"] = ImgB64[post.id]
+
+    res.json({"result": post});
+  });
 
   app.post('/checkToken', withAuth, function(req, res) {
     res.sendStatus(200);

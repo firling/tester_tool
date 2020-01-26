@@ -49,3 +49,38 @@
 .background-transparent {
   background-color: rgba(255, 255, 255, 0.1) !important;
 }
+
+.is-right {
+  text-align: right;
+}
+
+.on-hover:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  cursor: pointer;
+}
+
+.popup {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+  z-index: 10;
+}
+.popup_inner {
+  border-radius: 20px;
+  position: absolute;
+  height: auto;
+  left: 12%;
+  right: 12%;
+  top: 12%;
+  bottom: 12%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin: auto;
+  background-color: rgba(19, 11, 17, 1);
+}

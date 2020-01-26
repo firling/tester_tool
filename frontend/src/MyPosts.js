@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from "axios";
 import './App.css';
+import Popup from './Popup';
 
 class MyPosts extends Component {
 
@@ -9,6 +10,8 @@ class MyPosts extends Component {
     startUrl: "http://localhost:3001",
     redirect: false,
     posts: [],
+    showPopup: false,
+    idPopup: null,
   }
 
   async componentDidMount () {
@@ -24,7 +27,7 @@ class MyPosts extends Component {
         this.setState({ redirect: true })
       })
 
-    axios.post(`${this.state.startUrl}/getAllPost`, {
+    axios.post(`${this.state.startUrl}/getAllPostUser`, {
       token: localStorage.token
     })
       .then(res => {
@@ -37,6 +40,15 @@ class MyPosts extends Component {
       })
   }
 
+  tooglePopup = () => {
+    this.setState({ showPopup: !this.state.showPopup })
+  }
+
+  clickPost = async (id) => {
+    await this.setState({idPopup: id})
+    this.tooglePopup()
+  }
+
   render() {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
@@ -44,10 +56,11 @@ class MyPosts extends Component {
     return (
       <div className="hero-body">
         <div className="container">
-          <div className="column ">
+          <div className="column">
             {
               this.state.posts.map((elt, index) => (
-                <div className="block container box background-transparent">
+                <div className="block container box background-transparent on-hover" onClick={() => this.clickPost(elt.id)}>
+                  <p className="subtitle is-right">Created at {elt.created_at.replace('T', ' ').replace('.000Z', '')}</p>
                   <h2 className="title is-2">{elt.title}</h2>
                   <p className="subtitle">{elt.message}</p>
                   <div className="container">
@@ -57,6 +70,14 @@ class MyPosts extends Component {
               ))
             }
           </div>
+          {
+            this.state.showPopup ?
+            <Popup
+              closePopup={this.tooglePopup}
+              id={this.state.idPopup}
+            />
+            : null
+          }
         </div>
       </div>
     );
