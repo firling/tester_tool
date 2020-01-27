@@ -28,8 +28,8 @@ async function createServer () {
 
   const secret = "protestertoolsecretconnectiontokenAAAABBCDQS"
 
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
   app.use(cookieParser());
 
   app.use(cors());
@@ -178,7 +178,7 @@ async function createServer () {
     const {username} = req;
     const resId = await makeDbQuery(`select id from login where username=\'${username}\'`);
     const userId = resId[0].id;
-    const result = await makeDbQuery(`select * from post where user_id=${userId}`);
+    const result = await makeDbQuery(`select * from post where user_id=${userId} order by created_at desc`);
     const arrResult = [];
     result.forEach((elem, i) => {
       elem.image = ImgB64[elem.id]
