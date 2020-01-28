@@ -84,3 +84,33 @@
   margin: auto;
   background-color: rgba(19, 11, 17, 1);
 }
+
+.color-cat .test{
+  color: #f5695f;
+}
+.color-cat .script{
+  color: #d9a300;
+}
+.color-cat .map{
+  color: #0400ff;
+}
+.color-cat .dev{
+  color: #ff0000;
+}
+
+.back-color-cat .test{
+  background-color: #f5695f!important;
+}
+.back-color-cat .script{
+  background-color: #d9a300!important;
+}
+.back-color-cat .map{
+  background-color: #0400ff!important;
+}
+.back-color-cat .dev{
+  background-color: #ff0000!important;
+}
+
+.cat {
+  position: absolute;
+}

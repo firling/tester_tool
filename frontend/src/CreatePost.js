@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from "axios";
 import './App.css';
-import { Gluejar } from '@charliewilco/gluejar'
 
 class CreatePost extends Component {
 
@@ -12,6 +11,7 @@ class CreatePost extends Component {
     image: "",
     message: "",
     title: "",
+    cat: "",
     messageSuccess: "",
     messageError: "",
   }
@@ -64,6 +64,7 @@ class CreatePost extends Component {
       token: localStorage.token,
       image: this.state.image,
       message: this.state.message,
+      to_x: this.state.cat,
       title: this.state.title
     })
       .then( res => {
@@ -79,13 +80,11 @@ class CreatePost extends Component {
       })
   }
 
-  changeTitle = (e) => {
-    this.setState({title: e.target.value})
-  }
+  changeTitle = (e) => { this.setState({title: e.target.value}) }
 
-  changeMessage = (e) => {
-    this.setState({message: e.target.value})
-  }
+  changeMessage = (e) => { this.setState({message: e.target.value}) }
+
+  changeSelectCat = (e) => { this.setState({cat: e.target.value}) }
 
   render() {
     if (this.state.redirect) {
@@ -131,6 +130,21 @@ class CreatePost extends Component {
                       <img src={this.state.image} />
                     ) : null
                   }
+                </div>
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="label">Select caterogry</label>
+              <div className="control">
+                <div className="select" onChange={this.changeSelectCat}>
+                  <select className="color-cat">
+                    <option className="test">TO BE TESTED</option>
+                    <option className="script">TO SCRIPTERS</option>
+                    <option className="map">TO MAPPERS</option>
+                    <option className="dev">TO DEVS</option>
+                    <option className="other">OTHER</option>
+                  </select>
                 </div>
               </div>
             </div>

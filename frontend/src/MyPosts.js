@@ -12,6 +12,14 @@ class MyPosts extends Component {
     posts: [],
     showPopup: false,
     idPopup: null,
+    cats: {
+      "TO BE TESTED": "test",
+      "TO SCRIPTERS": "script",
+      "TO MAPPERS": "map",
+      "TO DEVS": "dev",
+      "OTHER": "other",
+    },
+
   }
 
   async componentDidMount () {
@@ -59,7 +67,10 @@ class MyPosts extends Component {
           <div className="column">
             {
               this.state.posts.map((elt, index) => (
-                <div className="block container box background-transparent on-hover" onClick={() => this.clickPost(elt.id)}>
+                <div className="block container box background-transparent on-hover back-color-cat" onClick={() => this.clickPost(elt.id)}>
+                  <div className={`cat ${this.state.cats[elt.to_x]}`}>
+                    <p className="subtitle" style={{color: "rgba(0, 0, 0, 0.9)"}}>{elt.to_x}</p>
+                  </div>
                   <p className="subtitle is-right">Created at {elt.created_at.replace('T', ' ').replace('.000Z', '')}</p>
                   <h2 className="title is-2">{elt.title}</h2>
                   <p className="subtitle">{elt.message}</p>

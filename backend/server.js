@@ -129,7 +129,7 @@ async function createServer () {
   });
 
   app.get('/getAllUsers', async function(req, res) {
-    var query = `select id, username, rank_id, is_admin, banned from login`;
+    var query = `select id, username, rank_id, is_admin, banned from login order by id`;
     var result = await makeDbQuery(query);
     res.json(result);
   })
@@ -156,12 +156,12 @@ async function createServer () {
   })
 
   app.post('/createPost', withAuth, async function(req, res) {
-    const {image, title, message} = req.body;
+    const {image, title, message, to_x} = req.body;
     const {username} = req
     const resIdUser = await makeDbQuery(`select id from login where username=\'${username}\'`);
     const id = resIdUser[0].id;
 
-    const query = `insert into post (title, message, user_id) values (\'${title}\', \'${message}\', \'${id}\')`
+    const query = `insert into post (title, message, user_id, to_x) values (\'${title}\', \'${message}\', \'${id}\', \'${to_x}\')`
 
     await makeDbQuery(query)
 
