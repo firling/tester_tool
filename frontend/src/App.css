@@ -92,23 +92,35 @@
   color: #d9a300;
 }
 .color-cat .map{
-  color: #0400ff;
+  color: #3625f5;
 }
 .color-cat .dev{
-  color: #ff0000;
+  color: #ff1c1c;
 }
 
 .back-color-cat .test{
   background-color: #f5695f!important;
+  padding: 2px;
+  border: 1px solid white;
+  border-radius: 5px;
 }
 .back-color-cat .script{
   background-color: #d9a300!important;
+  padding: 2px;
+  border: 1px solid white;
+  border-radius: 5px;
 }
 .back-color-cat .map{
-  background-color: #0400ff!important;
+  background-color: #3625f5!important;
+  padding: 2px;
+  border: 1px solid white;
+  border-radius: 5px;
 }
 .back-color-cat .dev{
-  background-color: #ff0000!important;
+  background-color: #ff1c1c!important;
+  padding: 2px;
+  border: 1px solid white;
+  border-radius: 5px;
 }
 
 .cat {

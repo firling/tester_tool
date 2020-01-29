@@ -198,6 +198,24 @@ async function createServer () {
     res.json({"result": post});
   });
 
+  app.post('/updatePost', withAuth, async function(req, res) {
+    const {id, title, image, message, to_x} = req.body;
+
+    ImgB64[id] = image;
+    await fs.writeFile("./file/img.json", JSON.stringify(ImgB64), (err) => { if (err) {throw err} })
+
+    const query = `update post set title=\"${title.replace("\"", "'")}\", message=\"${message.replace("\"", "'")}\", to_x=\"${to_x}\" where id=${id}`
+    await makeDbQuery(query);
+
+    const result = await makeDbQuery(`select * from post where id=${id}`);
+
+    var post = result[0];
+
+    post["image"] = ImgB64[post.id]
+
+    res.json({"result": post});
+  });
+
   app.post('/checkToken', withAuth, function(req, res) {
     res.sendStatus(200);
   });
