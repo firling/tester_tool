@@ -22,19 +22,7 @@ class MyPosts extends Component {
 
   }
 
-  async componentDidMount () {
-    axios.post(`${this.state.startUrl}/checkToken`, {
-      token: localStorage.token
-    })
-      .then( res => {
-        if (res.status !== 200) {
-          this.setState({ redirect: true })
-        }
-      })
-      .catch(err => {
-        this.setState({ redirect: true })
-      })
-
+  getAllPost = () => {
     axios.post(`${this.state.startUrl}/getAllPostUser`, {
       token: localStorage.token
     })
@@ -48,8 +36,30 @@ class MyPosts extends Component {
       })
   }
 
+  async componentDidMount () {
+    axios.post(`${this.state.startUrl}/checkToken`, {
+      token: localStorage.token
+    })
+      .then( res => {
+        if (res.status !== 200) {
+          this.setState({ redirect: true })
+        }
+      })
+      .catch(err => {
+        this.setState({ redirect: true })
+      })
+
+    this.getAllPost();
+  }
+
   tooglePopup = () => {
     this.setState({ showPopup: !this.state.showPopup })
+  }
+
+  closePopup = async (id) => {
+    await this.getAllPost();
+
+    this.tooglePopup();
   }
 
   clickPost = async (id) => {
@@ -83,6 +93,9 @@ class MyPosts extends Component {
                   <div className="container">
                     <img src={elt.image}/>
                   </div>
+                  <div style={elt.image ? {marginTop: "1rem"} : null}>
+                    <p className="subtitle">Created by {elt.username}</p>
+                  </div>
                 </div>
               ))
             }
@@ -90,7 +103,7 @@ class MyPosts extends Component {
           {
             this.state.showPopup ?
             <Popup
-              closePopup={this.tooglePopup}
+              closePopup={() => this.closePopup(this.state.idPopup)}
               id={this.state.idPopup}
             />
             : null

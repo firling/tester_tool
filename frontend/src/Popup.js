@@ -215,6 +215,15 @@ class Popup extends Component {
               </div>
             ) : null
           }
+          <div className="block container">
+            <div className="field">
+              <label className="label">Write an answer here :</label>
+              <div className="control">
+                <textarea className="textarea" placeholder="Message" onPaste={this.onPasteCom} value={this.state.messageCom} onChange={this.changeMessageCom}></textarea>
+              </div>
+              <button className="button is-info" style={{marginTop: "1px"}}>New message</button>
+            </div>
+          </div>
         </div>
       </div>
     );
