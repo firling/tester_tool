@@ -11,7 +11,7 @@ class CreatePost extends Component {
     image: "",
     message: "",
     title: "",
-    cat: "",
+    cat: "TO BE TESTED",
     messageSuccess: "",
     messageError: "",
   }

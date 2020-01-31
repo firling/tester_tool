@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const http = require('http');
-const sha1 = require('sha1')
+const sha1 = require('sha1');
 const fs = require('fs');
 const withAuth = require('./middleware');
 const withAuthAdmin = require('./middlewareAdmin');
@@ -12,6 +12,7 @@ const bodyParser = require('body-parser');
 const database = require('./database.js');
 const makeDbQuery = require("./makeDbQuery.js");
 const ImgB64 = require("./file/img.json");
+const ImgComB64 = require("./file/img_com.json");
 
 const PORT = 3001
 
@@ -214,6 +215,67 @@ async function createServer () {
     post["image"] = ImgB64[post.id]
 
     res.json({"result": post});
+  });
+
+  app.post('/createCom', withAuth, async function(req, res) {
+    const { post_id, com, image } = req.body;
+    const { username } = req;
+
+    const result = await makeDbQuery(`select id from login where username=\'${username}\'`);
+    const user_id = result[0]["id"];
+
+    const query = `insert into sub_com (user_id, post_id, com) values (${user_id}, ${post_id}, \'${com}\')`;
+    await makeDbQuery(query);
+
+    const lastId = await makeDbQuery(`select last_insert_id()`);
+
+    ImgComB64[lastId[0]["last_insert_id()"]] = image;
+    await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
+
+    //socket
+
+    res.json({"success": true});
+  });
+
+  app.post('/updateCom', withAuth, async function(req, res) {
+    const { com_id, com, image } = req.body;
+
+    const query = `update sub_com set com=\'${com}\' where id=${com_id}`;
+    await makeDbQuery(query);
+
+    ImgComB64[com_id] = image;
+    await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
+
+    //socket
+
+    res.json({"success": true});
+  });
+
+  app.post('/deleteCom', withAuth, async function(req, res) {
+    const { com_id } = req.body;
+
+    await makeDbQuery(`delete sub_com where id=${com_id}`);
+
+    delete ImgComB64[com_id];
+    await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
+
+    //socket
+
+    res.json({"success": true});
+  });
+
+  app.get('/getComs', withAuth, async function(req, res) {
+    const { post_id } = req.body;
+
+    const query = `select sub_com.id, username, com from sub_com, login where post_id=\'${post_id}\'`
+    const result = await makeDbQuery(query);
+
+    const arrResult = [];
+    result.forEach((elem, i) => {
+      elem.image = ImgComB64[elem.id]
+      arrResult.push(elem;)
+    });
+    res.json({"result": arrResult});
   });
 
   app.post('/checkToken', withAuth, function(req, res) {
