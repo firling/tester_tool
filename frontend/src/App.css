@@ -136,3 +136,20 @@
 .created_by {
   position: absolute;
 }
+
+.background-totally-transparent {
+  background-color: rgba(0, 0, 0, 0)!important;
+  border: 1px solid white;
+}
+
+.sub-com-username {
+  color: white;
+  position: absolute;
+  margin-top: -2.1rem;
+  background-color: #2B2429;
+}
+
+.sub-com-button-edit {
+  float: right;
+  margin-top: -3.2rem;
+}

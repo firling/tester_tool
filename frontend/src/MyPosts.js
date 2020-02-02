@@ -83,7 +83,7 @@ class MyPosts extends Component {
                   </div>
                   <p className="subtitle is-right">Created at {elt.created_at.replace('T', ' ').replace('.000Z', '')}</p>
                   <h2 className="title is-2">{elt.title}</h2>
-                  <div className="block">
+                  <div className="block box background-totally-transparent">
                     {
                       elt.message.split('\n').map((elem, i) => (
                         <p className="subtitle">{elem}</p>

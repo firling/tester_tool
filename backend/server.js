@@ -265,15 +265,15 @@ async function createServer () {
   });
 
   app.get('/getComs', withAuth, async function(req, res) {
-    const { post_id } = req.body;
+    const { post_id } = req.query;
 
-    const query = `select sub_com.id, username, com from sub_com, login where post_id=\'${post_id}\'`
+    const query = `select sub_com.id, username, com from sub_com, login where post_id=\'${post_id}\' and sub_com.user_id=login.id order by id desc`
     const result = await makeDbQuery(query);
 
     const arrResult = [];
     result.forEach((elem, i) => {
       elem.image = ImgComB64[elem.id]
-      arrResult.push(elem;)
+      arrResult.push(elem);
     });
     res.json({"result": arrResult});
   });
@@ -285,6 +285,10 @@ async function createServer () {
   app.post('/checkTokenAdmin', withAuthAdmin, function(req, res) {
     res.sendStatus(200);
   });
+
+  app.get('/username', withAuth, function(req, res) {
+    res.json({ "username": req.username })
+  })
 
   // Return a 404
   app.use((req, res) => {

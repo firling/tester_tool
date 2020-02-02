@@ -6,7 +6,9 @@ class Popup extends Component {
 
   state = {
     startUrl: "http://localhost:3001",
+    username: "",
     post: {},
+    com: [],
     cats: {
       "TO BE TESTED": "test",
       "TO SCRIPTERS": "script",
@@ -15,6 +17,8 @@ class Popup extends Component {
       "OTHER": "other",
     },
     is_editing: false,
+    imageCreate: "",
+    text: "",
   }
 
   getPost = () => {
@@ -30,8 +34,32 @@ class Popup extends Component {
       })
   }
 
+  getCom = () => {
+    axios.get(`${this.state.startUrl}/getComs?post_id=${this.props.id}&token=${localStorage.token}`)
+      .then(res => {
+        this.setState({
+          com: res.data.result
+        })
+      })
+      .catch(err => {
+        console.log('err get com', err)
+      })
+  }
+
   async componentDidMount () {
+    axios.get(`${this.state.startUrl}/username?token=${localStorage.token}`)
+      .then( res => {
+        if (res.status !== 200) {
+          this.setState({ redirect: true })
+        } else {
+          this.setState({ username: res.data.username })
+        }
+      })
+      .catch(err => {
+        this.setState({ redirect: true })
+      })
     this.getPost();
+    this.getCom();
   }
 
   edit = (e) => {
@@ -49,7 +77,9 @@ class Popup extends Component {
     this.setState({post})
   }
 
-  onPaste = async (e) => {
+  delImageCreate = (e) => { this.setState({imageCreate: ""}) }
+
+  onPaste = async (e, type) => {
     if(!e.clipboardData.items) { return console.log("null") }
     for (let i = 0; i < e.clipboardData.items.length; i++) {
       let blob = e.clipboardData.items[i].getAsFile()
@@ -59,9 +89,15 @@ class Popup extends Component {
         reader.readAsDataURL(blob)
 
         reader.onloadend = () => {
-          var {post} = this.state
-          post["image"] = reader.result
-          this.setState({post})
+          if (type == "post") {
+            var {post} = this.state
+            post["image"] = reader.result
+            this.setState({post})
+          } else {
+            var {imageCreate} = this.state;
+            imageCreate = reader.result
+            this.setState({imageCreate})
+          }
         }
       }
     }
@@ -85,6 +121,8 @@ class Popup extends Component {
     this.setState({post})
   }
 
+  changeComMessage = (e) => { this.setState({text: e.target.value}) }
+
   save = (e) => {
     var {post} = this.state
     post["token"] = localStorage.token;
@@ -99,6 +137,22 @@ class Popup extends Component {
       .catch(err => {
         console.log("error while saving the post:", err)
       })
+  }
+
+  createCom = () => {
+    axios.post(`${this.state.startUrl}/createCom`, {
+      post_id: this.props.id,
+      com: this.state.text,
+      image: this.state.imageCreate,
+      token: localStorage.token
+    })
+    .then(res => {
+      this.setState({imageCreate: "", text: ""})
+      this.getCom();
+    })
+    .catch(err => {
+      console.log("error while creating the com:", err)
+    })
   }
 
   render() {
@@ -124,7 +178,7 @@ class Popup extends Component {
                       <div className="field">
                         <label className="label">Message</label>
                         <div className="control">
-                          <textarea className="textarea" placeholder="Message" onPaste={this.onPaste} value={this.state.post.message} onChange={this.changeMessage}></textarea>
+                          <textarea className="textarea" placeholder="Message" onPaste={(e) => this.onPaste(e, "post")} value={this.state.post.message} onChange={this.changeMessage}></textarea>
                         </div>
                       </div>
 
@@ -143,7 +197,7 @@ class Popup extends Component {
                           </div>
                         </div>
                         <div className="control">
-                          <div className="container box" onPaste={this.onPaste}>
+                          <div className="container box" onPaste={(e) => this.onPaste(e, "post")}>
                             {
                               this.state.post.image != "" ? (
                                 <img src={this.state.post.image} />
@@ -196,7 +250,7 @@ class Popup extends Component {
                       </div>
                       <p className="subtitle is-right">Created at {this.state.post.created_at.replace('T', ' ').replace('.000Z', '')}</p>
                       <h2 className="title is-2">{this.state.post.title}</h2>
-                      <div className="block">
+                      <div className="block box background-totally-transparent">
                         {
                           this.state.post.message.split('\n').map((elem, i) => (
                             <p className="subtitle">{elem}</p>
@@ -217,12 +271,51 @@ class Popup extends Component {
           }
           <div className="block container">
             <div className="field">
-              <label className="label">Write an answer here :</label>
+              <label className="label">Write a sub comment here :</label>
               <div className="control">
-                <textarea className="textarea" placeholder="Message" onPaste={this.onPasteCom} value={this.state.messageCom} onChange={this.changeMessageCom}></textarea>
+                <textarea className="textarea" placeholder="Message" onPaste={(e) => this.onPaste(e, "com")} value={this.state.text} onChange={this.changeComMessage}></textarea>
               </div>
-              <button className="button is-info" style={{marginTop: "1px"}}>New message</button>
+              <div className="control columns is-vcentered" style={{marginTop: "3px"}}>
+                <div className="column">
+                  <button
+                    className="button is-danger"
+                    onClick={this.delImageCreate}
+                    disabled={this.state.imageCreate == ""}
+                  >Delete Image</button>
+                </div>
+                <div className="column is-four-fifths">
+                  <div className="container box has-text-centered" onPaste={(e) => this.onPaste(e, "com")}>
+                    {
+                      this.state.imageCreate != "" ? (
+                        <img src={this.state.imageCreate} style={{maxHeight: "20rem"}}/>
+                      ) : <h4 className="title is-4" style={{color: "black"}}>Your pasted image</h4>
+                    }
+                  </div>
+                </div>
+              </div>
+              <button className="button is-info" style={{marginTop: "3px"}} onClick={this.createCom} disabled={this.state.text == ""}>New message</button>
             </div>
+          </div>
+
+          <div className="block box container background-transparent" style={{marginBottom: "2rem"}}>
+            {
+              this.state.com.length > 0 ? (
+                this.state.com.map((elt, i) => (
+                  <div className="block box background-totally-transparent">
+                    <label className="sub-com-username">{elt.username}</label>
+                    {
+                      elt.com.split('\n').map((elem, i) => (
+                        <p className="subtitle">{elem}</p>
+                      ))
+                    }
+                    {
+                      elt.image != "" ? <img src={elt.image} style={{maxHeight: "25rem"}}/> : null
+                    }
+                  <button className="button is-warning sub-com-button-edit" disabled={this.state.username != elt.username}>edit</button>
+                  </div>
+                ))
+              ) : <h3 className="title is-3">No sub comment</h3>
+            }
           </div>
         </div>
       </div>
