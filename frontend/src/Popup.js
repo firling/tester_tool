@@ -37,8 +37,13 @@ class Popup extends Component {
   getCom = () => {
     axios.get(`${this.state.startUrl}/getComs?post_id=${this.props.id}&token=${localStorage.token}`)
       .then(res => {
+        var array = []
+        res.data.result.forEach((elem, i) => {
+          elem.id_updating = false
+          array.push(elem)
+        })
         this.setState({
-          com: res.data.result
+          com: array
         })
       })
       .catch(err => {
@@ -153,6 +158,74 @@ class Popup extends Component {
     .catch(err => {
       console.log("error while creating the com:", err)
     })
+  }
+
+  editCom = (index) => {
+    var { com } = this.state;
+    com[index].is_updating = true;
+    this.setState({ com })
+  }
+
+  changeMessageCom = (e, i) => {
+    var { com } = this.state;
+    com[i].com = e.target.value;
+    this.setState({ com })
+  }
+
+  delImageCom = (i) => {
+    var { com } = this.state;
+    com[i].image = "";
+    this.setState({ com })
+  }
+
+  cancelSaveCom = () => {
+    this.getCom();
+  }
+
+  deleteCom = (index) => {
+    var { com } = this.state
+    var id = com[index].id;
+    axios.post(`${this.state.startUrl}/deleteCom`, {com_id: id, token: localStorage.token})
+      .then((res) => {
+        this.getCom();
+      })
+      .catch((err) => {
+        console.log("err deleting com =>", err)
+      })
+  }
+
+  changeEditMessage = (i) => {
+    var { com } = this.state;
+    var currentCom = com[i]
+
+    axios.post(`${this.state.startUrl}/updateCom`, {
+      com_id: currentCom.id,
+      com: currentCom.com,
+      image: currentCom.image,
+      token: localStorage.token,
+    }).then((res) => {
+      this.getCom();
+    }).catch((err) => {
+      console.log('err updating com =>', err)
+    })
+  }
+
+  onPasteCom = async (e, index) => {
+    if(!e.clipboardData.items) { return console.log("null") }
+    for (let i = 0; i < e.clipboardData.items.length; i++) {
+      let blob = e.clipboardData.items[i].getAsFile()
+
+      if (blob) {
+        const reader = new window.FileReader()
+        reader.readAsDataURL(blob)
+
+        reader.onloadend = () => {
+          var {com} = this.state
+          com[index]["image"] = reader.result
+          this.setState({com})
+        }
+      }
+    }
   }
 
   render() {
@@ -301,18 +374,51 @@ class Popup extends Component {
             {
               this.state.com.length > 0 ? (
                 this.state.com.map((elt, i) => (
-                  <div className="block box background-totally-transparent">
-                    <label className="sub-com-username">{elt.username}</label>
-                    {
-                      elt.com.split('\n').map((elem, i) => (
-                        <p className="subtitle">{elem}</p>
-                      ))
-                    }
-                    {
-                      elt.image != "" ? <img src={elt.image} style={{maxHeight: "25rem"}}/> : null
-                    }
-                  <button className="button is-warning sub-com-button-edit" disabled={this.state.username != elt.username}>edit</button>
-                  </div>
+                  elt.is_updating ? (
+                    <div className="block box background-totally-transparent">
+                      <div className="control">
+                        <textarea className="textarea" placeholder="Message" onPaste={(e) => this.onPasteCom(e, i)} value={elt.com} onChange={(e) => this.changeMessageCom(e, i)}></textarea>
+                      </div>
+                      <div className="control columns is-vcentered" style={{marginTop: "3px"}}>
+                        <div className="column">
+                          <button
+                            className="button is-danger"
+                            onClick={() => this.delImageCom(i)}
+                            disabled={elt.image == ""}
+                          >Delete Image</button>
+                        </div>
+                        <div className="column is-four-fifths">
+                          <div className="container box has-text-centered" onPaste={(e) => this.onPasteCom(e, i)}>
+                            {
+                              elt.image != "" ? (
+                                <img src={elt.image} style={{maxHeight: "20rem"}}/>
+                              ) : <h4 className="title is-4" style={{color: "black"}}>Your pasted image</h4>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                      <div className="control" style={{ float: "right", marginBottom: "-5rem", zIndex: "15" }}>
+                        <button className="button is-danger" onClick={() => this.deleteCom(i)}>Delete</button>
+                      </div>
+                      <div className="control">
+                        <button className="button is-success" onClick={() => this.changeEditMessage(i)} disabled={elt.com == ""}>Save</button>
+                        <button className="button is-warning" style={{marginLeft: "30px"}} onClick={this.cancelSaveCom}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="block box background-totally-transparent">
+                      <label className="sub-com-username">{elt.username}</label>
+                      {
+                        elt.com.split('\n').map((elem, i) => (
+                          <p className="subtitle">{elem}</p>
+                        ))
+                      }
+                      {
+                        elt.image != "" ? <img src={elt.image} style={{maxHeight: "25rem"}}/> : null
+                      }
+                      <button className="button is-warning sub-com-button-edit" disabled={this.state.username != elt.username} onClick={() => this.editCom(i)}>edit</button>
+                    </div>
+                  )
                 ))
               ) : <h3 className="title is-3">No sub comment</h3>
             }
