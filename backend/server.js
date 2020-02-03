@@ -254,7 +254,9 @@ async function createServer () {
   app.post('/deleteCom', withAuth, async function(req, res) {
     const { com_id } = req.body;
 
-    await makeDbQuery(`delete sub_com where id=${com_id}`);
+    console.log("DELETE COM")
+
+    await makeDbQuery(`delete from sub_com where id=${com_id}`);
 
     delete ImgComB64[com_id];
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })

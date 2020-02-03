@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  mer. 29 jan. 2020 à 22:10
+-- Généré le :  Dim 02 fév. 2020 à 22:14
 -- Version du serveur :  5.7.24
 -- Version de PHP :  7.2.14
 
@@ -83,19 +83,16 @@ CREATE TABLE IF NOT EXISTS `post` (
   `user_id` int(11) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `post`
 --
 
 INSERT INTO `post` (`id`, `title`, `message`, `to_x`, `user_id`, `created_at`) VALUES
-(1, 'zizi', 'qdfqdfvq sdfvqd qdfqsdf qdf qsdf qsd fqsdf\r\nzizizizi', 'TO BE TESTED', 1, '2020-01-26 13:06:06'),
-(2, 'zizi', 'qdfqdfvq sdfvqd qdfqsdf qdf qsdf qsd fqsdf\r\nzizizizi', 'TO BE TESTED', 1, '2020-01-26 13:06:06'),
-(3, 'zizi', 'qdfqdfvq sdfvqd qdfqsdf qdf qsdf qsd fqsdf\r\nzizizizi', 'TO BE TESTED', 1, '2020-01-26 15:35:04'),
-(4, 'zizi', 'qdfqdfvq sdfvqd qdfqsdf qdf qsdf qsd fqsdf\r\nzizizizi', 'TO BE TESTED', 1, '2020-01-28 21:52:52'),
-(5, 'zizi', 'qdfqdfvq sdfvqd qdfqsdf qdf qsdf qsd fqsdf\r\nzizizizi', 'TO BE TESTED', 1, '2020-01-28 21:54:21'),
-(6, 'me too', 'I don\'t like you', 'TO BE TESTED', 1, '2020-01-29 19:59:47');
+(2, 'Au DD', 'la marche dema qsdf au dd', 'TO BE TESTED', 1, '2020-01-26 13:06:06'),
+(7, 'test url', 'http://localhost:3000/myposts', 'TO BE TESTED', 1, '2020-01-31 20:19:11'),
+(6, 'me tooooooooo', 'I don\'t like you.', 'TO SCRIPTERS', 1, '2020-01-29 19:59:47');
 
 -- --------------------------------------------------------
 
@@ -123,6 +120,29 @@ INSERT INTO `rank` (`id`, `name`) VALUES
 (39, 'Scripter App'),
 (40, 'Scripter'),
 (50, 'Developer');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `sub_com`
+--
+
+DROP TABLE IF EXISTS `sub_com`;
+CREATE TABLE IF NOT EXISTS `sub_com` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `com` varchar(1000) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `sub_com`
+--
+
+INSERT INTO `sub_com` (`id`, `user_id`, `post_id`, `com`) VALUES
+(2, 1, 7, 'Me tooooooooooo'),
+(3, 1, 7, 'AYAYAYAYAYAYAYAYA');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
