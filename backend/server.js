@@ -188,6 +188,16 @@ async function createServer () {
     res.json({"result": arrResult});
   });
 
+  app.post('/getAllPost', withAuth, async function(req, res) {
+    const result = await makeDbQuery(`select post.id, title, message, to_x, user_id, created_at, username from post, login where post.user_id=login.id order by created_at desc limit 25`);
+    const arrResult = [];
+    result.forEach((elem, i) => {
+      elem.image = ImgB64[elem.id]
+      arrResult.push(elem);
+    });
+    res.json({"result": arrResult});
+  });
+
   app.get('/getPost', async function(req, res) {
     const {id} = req.query;
     const result = await makeDbQuery(`select post.id, title, message, to_x, user_id, created_at, username from post, login where post.id=${id} and login.id=post.user_id`);

@@ -63,9 +63,9 @@ class Header extends Component {
                       Home
                     </Link>
 
-                    <a className="navbar-item" style={window.location.pathname == "/latestposts" ? {color: "#209CEE"} : {}}>
+                    <Link className="navbar-item" to="/latestposts" style={window.location.pathname == "/latestposts" ? {color: "#209CEE"} : {}}>
                       Latest Posts
-                    </a>
+                    </Link>
 
                     <Link className="navbar-item" to="/myposts" style={window.location.pathname == "/myposts" ? {color: "#209CEE"} : {}}>
                       My Posts
@@ -102,6 +102,9 @@ class Header extends Component {
 
                   <div className="navbar-end">
                     <div className="navbar-item">
+                      <div className="username">
+                        <label>Logged as { this.props.username }</label>
+                      </div>
                       <div className="buttons">
                         <Link className="button is-info" to="/changepassword">
                           Change Password

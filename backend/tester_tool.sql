@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  Dim 02 fév. 2020 à 22:14
--- Version du serveur :  5.7.24
--- Version de PHP :  7.2.14
+-- Généré le :  mar. 04 fév. 2020 à 14:47
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS `login` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(80) NOT NULL,
-  `rank_id` int(11) NOT NULL DEFAULT '9',
-  `is_admin` int(11) NOT NULL DEFAULT '0',
-  `banned` int(11) NOT NULL DEFAULT '0',
+  `rank_id` int(11) NOT NULL DEFAULT 9,
+  `is_admin` int(11) NOT NULL DEFAULT 0,
+  `banned` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `post` (
   `message` varchar(1000) NOT NULL,
   `to_x` varchar(30) NOT NULL DEFAULT 'TO BE TESTED',
   `user_id` int(11) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS `sub_com` (
   `user_id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
   `com` varchar(1000) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
@@ -140,9 +141,9 @@ CREATE TABLE IF NOT EXISTS `sub_com` (
 -- Déchargement des données de la table `sub_com`
 --
 
-INSERT INTO `sub_com` (`id`, `user_id`, `post_id`, `com`) VALUES
-(2, 1, 7, 'Me tooooooooooo'),
-(3, 1, 7, 'AYAYAYAYAYAYAYAYA');
+INSERT INTO `sub_com` (`id`, `user_id`, `post_id`, `com`, `created_at`) VALUES
+(2, 1, 7, 'Me tooooooooooo', '2020-02-04 15:44:59'),
+(3, 1, 7, 'AYAYAYAYAYAYAYAYA', '2020-02-04 15:44:59');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
