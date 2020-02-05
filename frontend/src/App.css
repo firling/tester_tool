@@ -155,5 +155,9 @@
 }
 
 .username{
-  margin-right: 1rem; 
+  margin-right: 1rem;
+}
+
+.title-color {
+  color: #363636!important;
 }

@@ -30,7 +30,16 @@ class Home extends Component {
     }
     return (
       <div className="hero-body">
-        <h1 className="title is-1">HOME</h1>
+        <div className="columns is-vcentered" style={{width: "100%"}}>
+          <div className="column">
+            Aya
+          </div>
+          <div className="column is-one-third">
+            <div className="box has-text-centered">
+              <h3 className="title is-3 title-color">Chat</h3>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

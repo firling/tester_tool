@@ -297,6 +297,26 @@ async function createServer () {
     res.json({"result": arrResult});
   });
 
+  app.post('/createChatMessage', withAuth, async function(req, res) {
+    const { message } = req.body;
+    const { username } = req;
+
+    const resultUser = await makeDbQuery(`select id from login where username=\'${username}\'`);
+
+    const query =  `insert into chat (message, user_id) values (\'${message}\', ${resultUser[0].id})`;
+    await makeDbQuery(query);
+
+    socket.ioEmit(`chatMessage`);
+
+    res.json({"success": true});
+  });
+
+  app.get('/getMessage', withAuth, async function(req, res) {
+    const result = await makeDbQuery("select * from chat limit 75");
+
+    res.json({"result": result});
+  });
+
   app.post('/checkToken', withAuth, function(req, res) {
     res.sendStatus(200);
   });
