@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
+import io from 'socket.io-client';
+
+const socket = io("ws://localhost:3001", { path: "/ws" });
 
 class Popup extends Component {
 
@@ -57,7 +60,7 @@ class Popup extends Component {
         if (res.status !== 200) {
           this.setState({ redirect: true })
         } else {
-          this.setState({ username: res.data.username })
+          this.setState({ username: res.data.username.charAt(0).toUpperCase() + res.data.username.substr(1) })
         }
       })
       .catch(err => {
@@ -229,6 +232,9 @@ class Popup extends Component {
   }
 
   render() {
+    socket.on(`Com${this.props.id}`, () => {
+      this.getCom();
+    });
     return (
       <div className='popup'>
         <div className='popup_inner'>

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from "axios";
+import io from 'socket.io-client';
 import './App.css';
 import Popup from './Popup';
+
+const socket = io("ws://localhost:3001", { path: "/ws" });
 
 class LatestPosts extends Component {
 
@@ -71,6 +74,11 @@ class LatestPosts extends Component {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
     }
+
+    socket.on(`changePost`, () => {
+      this.getAllPost();
+    });
+
     return (
       <div className="hero-body">
         <div className="container">

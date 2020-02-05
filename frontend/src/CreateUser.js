@@ -84,7 +84,7 @@ class CreateUser extends Component {
             <div className="field">
               <label className="label">Password</label>
               <div className="control">
-                <input className="input is-info" type="text" placeholder="Username" value={this.password} onChange={this.changePassword} />
+                <input className="input is-info" type="text" placeholder="Ayaaa" value={this.password} onChange={this.changePassword} />
               </div>
             </div>
 
