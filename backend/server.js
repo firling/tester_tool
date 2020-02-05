@@ -5,6 +5,7 @@ const http = require('http');
 const sha1 = require('sha1');
 const fs = require('fs');
 const withAuth = require('./middleware');
+const socket = require('./socket.js');
 const withAuthAdmin = require('./middlewareAdmin');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
@@ -172,6 +173,8 @@ async function createServer () {
 
     await fs.writeFile("./file/img.json", JSON.stringify(ImgB64), (err) => { if (err) {throw err} })
 
+    socket.ioEmit("changePost");
+
     res.json({"success": true});
   });
 
@@ -224,6 +227,8 @@ async function createServer () {
 
     post["image"] = ImgB64[post.id]
 
+    socket.ioEmit("changePost");
+
     res.json({"result": post});
   });
 
@@ -242,7 +247,7 @@ async function createServer () {
     ImgComB64[lastId[0]["last_insert_id()"]] = image;
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
 
-    //socket
+    socket.ioEmit(`Com${post_id}`);
 
     res.json({"success": true});
   });
@@ -250,13 +255,15 @@ async function createServer () {
   app.post('/updateCom', withAuth, async function(req, res) {
     const { com_id, com, image } = req.body;
 
+    const subComValue = await makeDbQuery(`select post_id from sub_com where id=${com_id}`)
+
     const query = `update sub_com set com=\'${com}\' where id=${com_id}`;
     await makeDbQuery(query);
 
     ImgComB64[com_id] = image;
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
 
-    //socket
+    socket.ioEmit(`Com${subComValue[0].post_id}`);
 
     res.json({"success": true});
   });
@@ -264,14 +271,14 @@ async function createServer () {
   app.post('/deleteCom', withAuth, async function(req, res) {
     const { com_id } = req.body;
 
-    console.log("DELETE COM")
+    const subComValue = await makeDbQuery(`select post_id from sub_com where id=${com_id}`)
 
     await makeDbQuery(`delete from sub_com where id=${com_id}`);
 
     delete ImgComB64[com_id];
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
 
-    //socket
+    socket.ioEmit(`Com${subComValue[0].post_id}`);
 
     res.json({"success": true});
   });
@@ -315,6 +322,7 @@ async function createServer () {
 
 createServer()
   .then(server => {
+    socket.initSocketServer(server, {path: '/ws'});
     server.listen(PORT);
     console.log(`Listening on port ${PORT}`);
   })
