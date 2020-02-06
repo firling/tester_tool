@@ -161,3 +161,39 @@
 .title-color {
   color: #363636!important;
 }
+
+.chat {
+  width: 31%;
+  position: fixed;
+  top: 20%;
+  bottom: 20%;
+}
+
+.chat-text{
+  height: 65%;
+  border: 1px solid black;
+  border-radius: 10px;
+  overflow-y: scroll;
+}
+
+.chat-message {
+  margin-right: 1em;
+  margin-left: 1em;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid white;
+}
+.chat-message p, .chat-message label{
+  color: white;
+}
+.chat-date{
+  margin-left: 5px;
+}
+.chat-header{
+  margin-right: 100%;
+}
+
+.chat-send {
+  margin-top: 1rem;
+  height: 15%;
+}
