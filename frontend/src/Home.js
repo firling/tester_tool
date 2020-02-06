@@ -1,26 +1,29 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { animateScroll } from "react-scroll";
+import io from 'socket.io-client';
 import axios from "axios";
 import './App.css';
+
+const socket = io("ws://localhost:3001", { path: "/ws" });
 
 class Home extends Component {
 
   state = {
     startUrl: "http://localhost:3001",
     redirect: false,
-    message: [
-      {username: "firling", message: "lkqjsdfqjsdqcqs dq sdfqsdfqoisoi oijqodi  qdfqsd", date: "15:34"},
-      {username: "hihi", message: "lkqjsdfqjsdqcqs d qdfqsd", date: "15:33"},
-      {username: "firling", message: "lkqjsdfqjsdqcqs dq sdfqsdfqoisoi oijqodi  qdfqsd", date: "15:34"},
-      {username: "hihi", message: "lkqjsdfqjsdqcqs d qdfqsd", date: "15:33"},
-      {username: "firling", message: "lkqjsdfqjsdqcqs dq sdfqsdfqoisoi oijqodi  qdfqsd", date: "15:34"},
-      {username: "hihi", message: "lkqjsdfqjsdqcqs d qdfqsd", date: "15:33"},
-      {username: "firling", message: "lkqjsdfqjsdqcqs dq sdfqsdfqoisoi oijqodi  qdfqsd", date: "15:34"},
-      {username: "hihi", message: "lkqjsdfqjsdqcqs d qdfqsd", date: "15:33"},
-      {username: "yamette", message: "lkqjsdfqjsdqcdcqsdcqsdcqsqs dq sdfqsdcqsdcqsqsdfqoisoi oijqodi  qdfqsd", date: "15:32"},
-    ],
+    message: [],
     messageSend: "",
+  }
+
+  getChat = () => {
+    axios.get(`${this.state.startUrl}/getMessage?token=${localStorage.token}`)
+      .then( res => {
+        this.setState({ message: res.data.result })
+      })
+      .catch(err => {
+        console.log("ERROR ftching chat", err)
+      })
   }
 
   async componentDidMount () {
@@ -35,6 +38,7 @@ class Home extends Component {
       .catch(err => {
         this.setState({ redirect: true })
       })
+    await this.getChat();
     this.scrollToBottom();
   }
 
@@ -68,6 +72,11 @@ class Home extends Component {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
     }
+
+    socket.on(`chatMessage`, () => {
+      this.getChat();
+    });
+
     return (
       <div className="hero-body">
         <div className="columns is-vcentered" style={{width: "100%", height: "100%"}}>

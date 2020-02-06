@@ -4,6 +4,7 @@ const cors = require('cors');
 const http = require('http');
 const sha1 = require('sha1');
 const fs = require('fs');
+var moment = require('moment');
 const withAuth = require('./middleware');
 const socket = require('./socket.js');
 const withAuthAdmin = require('./middlewareAdmin');
@@ -312,9 +313,19 @@ async function createServer () {
   });
 
   app.get('/getMessage', withAuth, async function(req, res) {
-    const result = await makeDbQuery("select * from chat limit 75");
-
-    res.json({"result": result});
+    const { username } = req;
+    const result = await makeDbQuery("select * from chat order by created_at desc limit 75");
+    var arrResult = []
+    result.forEach((elem, i) => {
+      elem.username = username;
+      if (moment().format("DD") == moment(elem.created_at).format("DD")) {
+        elem.date = "Today at " + moment(elem.created_at).format("HH:mm")
+      } else {
+        elem.date = moment(elem.created_at).format("YYYY-MM-DD HH:mm")
+      }
+      arrResult.push(elem)
+    })
+    res.json({"result": arrResult.reverse()});
   });
 
   app.post('/checkToken', withAuth, function(req, res) {
