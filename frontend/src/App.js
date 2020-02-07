@@ -13,6 +13,7 @@ import ManageUser from "./ManageUser";
 import CreatePost from "./CreatePost";
 import MyPosts from "./MyPosts";
 import LatestPosts from "./LatestPosts";
+import UserLogs from "./UserLogs";
 
 class App extends Component {
 
@@ -104,6 +105,18 @@ class App extends Component {
           </div>
         )} />
 
+        <Route path='/userlogs' component={() => (
+          <div>
+            <StickyContainer>
+              <section className="hero is-dark is-fullheight">
+                <Header username={this.state.username} />
+                <Title title="User Logs"/>
+                <UserLogs />
+              </section>
+            </StickyContainer>
+          </div>
+        )} />
+
         <Route path='/createpost' component={() => (
           <div>
             <StickyContainer>
@@ -143,6 +156,10 @@ class App extends Component {
         <Route exact path="/">
           {this.state.redirect ? <Redirect to="/login" /> : null}
           {this.state.redirectAfterLogin ? <Redirect to="/home" /> : null}
+        </Route>
+
+        <Route path='*' exact>
+          <Redirect to="/" />
         </Route>
 
       </Router>

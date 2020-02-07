@@ -249,6 +249,7 @@ async function createServer () {
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
 
     socket.ioEmit(`Com${post_id}`);
+    socket.ioEmit(`NewCom`);
 
     res.json({"success": true});
   });
@@ -265,6 +266,7 @@ async function createServer () {
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
 
     socket.ioEmit(`Com${subComValue[0].post_id}`);
+    socket.ioEmit(`NewCom`);
 
     res.json({"success": true});
   });
@@ -280,6 +282,7 @@ async function createServer () {
     await fs.writeFile("./file/img_com.json", JSON.stringify(ImgComB64), (err) => { if (err) {throw err} })
 
     socket.ioEmit(`Com${subComValue[0].post_id}`);
+    socket.ioEmit(`NewCom`);
 
     res.json({"success": true});
   });
@@ -287,7 +290,7 @@ async function createServer () {
   app.get('/getComs', withAuth, async function(req, res) {
     const { post_id } = req.query;
 
-    const query = `select sub_com.id, username, com from sub_com, login where post_id=\'${post_id}\' and sub_com.user_id=login.id order by id desc`
+    const query = `select sub_com.id, username, com, created_at from sub_com, login where post_id=\'${post_id}\' and sub_com.user_id=login.id order by id desc`
     const result = await makeDbQuery(query);
 
     const arrResult = [];
@@ -313,11 +316,9 @@ async function createServer () {
   });
 
   app.get('/getMessage', withAuth, async function(req, res) {
-    const { username } = req;
-    const result = await makeDbQuery("select * from chat order by created_at desc limit 75");
+    const result = await makeDbQuery("select message, user_id, created_at, username from chat, login where chat.user_id=login.id order by created_at desc limit 75");
     var arrResult = []
     result.forEach((elem, i) => {
-      elem.username = username;
       if (moment().format("DD") == moment(elem.created_at).format("DD")) {
         elem.date = "Today at " + moment(elem.created_at).format("HH:mm")
       } else {
@@ -327,6 +328,32 @@ async function createServer () {
     })
     res.json({"result": arrResult.reverse()});
   });
+
+  app.get('/getPostCom', withAuth, async function(req, res) {
+    const result = await makeDbQuery(`select post.id, title, message, to_x, user_id, created_at, username from post, login where post.user_id=login.id order by created_at desc limit 25`);
+    const arrResult = [];
+    result.forEach((elem, i) => {
+      elem.image = ImgB64[elem.id]
+      arrResult.push(elem);
+    });
+
+    const query = `select sub_com.id, username, com, title, sub_com.created_at, post_id from sub_com, login, post where sub_com.user_id=login.id and sub_com.post_id=post.id order by sub_com.created_at desc limit 25`
+    const result2 = await makeDbQuery(query);
+
+    const arrResult2 = [];
+    result2.forEach((elem, i) => {
+      elem.image = ImgComB64[elem.id]
+      arrResult2.push(elem);
+    });
+
+    const arrResult3 = arrResult.concat(arrResult2);
+
+    arrResult3.sort(function(a, b) {
+      return moment(b.created_at).unix() - moment(a.created_at).unix();
+    })
+
+    res.json({"result": arrResult3});
+  })
 
   app.post('/checkToken', withAuth, function(req, res) {
     res.sendStatus(200);

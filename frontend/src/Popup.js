@@ -423,6 +423,7 @@ class Popup extends Component {
                         elt.image != "" ? <img src={elt.image} style={{maxHeight: "25rem"}}/> : null
                       }
                       <button className="button is-warning sub-com-button-edit" disabled={this.state.username != elt.username} onClick={() => this.editCom(i)}>edit</button>
+                      <p className="subtitle is-right">Created at {elt.created_at.replace('T', ' ').replace('.000Z', '')}</p>
                     </div>
                   )
                 ))
