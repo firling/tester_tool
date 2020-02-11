@@ -4,11 +4,12 @@ import axios from "axios";
 import './App.css';
 import Firling from './img/firling.png'
 import { StickyContainer, Sticky } from 'react-sticky';
+import config from "./conf/conf.js"
 
 class Header extends Component {
 
   state = {
-    startUrl : "http://localhost:3001",
+    startUrl : config.startUrl,
     redirect: false,
     is_admin: false
   }

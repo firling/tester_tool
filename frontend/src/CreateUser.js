@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import axios from "axios";
 import './App.css';
+import config from "./conf/conf.js"
 
 class CreateUser extends Component {
 
   state = {
-    startUrl: "http://localhost:3001",
+    startUrl: config.startUrl,
     redirect: false,
     rank: [],
     username: "",

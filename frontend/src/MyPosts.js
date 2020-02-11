@@ -3,11 +3,12 @@ import { Redirect } from 'react-router-dom';
 import axios from "axios";
 import './App.css';
 import Popup from './Popup';
+import config from "./conf/conf.js"
 
 class MyPosts extends Component {
 
   state = {
-    startUrl: "http://localhost:3001",
+    startUrl: config.startUrl,
     redirect: false,
     posts: [],
     showPopup: false,
@@ -18,6 +19,7 @@ class MyPosts extends Component {
       "TO MAPPERS": "map",
       "TO DEVS": "dev",
       "OTHER": "other",
+      "DONE": "done"
     },
 
   }

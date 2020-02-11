@@ -4,13 +4,14 @@ import axios from "axios";
 import io from 'socket.io-client';
 import './App.css';
 import Popup from './Popup';
+import config from "./conf/conf.js"
 
-const socket = io("ws://localhost:3001", { path: "/ws" });
+const socket = io(config.socket, { path: "/ws" });
 
 class LatestPosts extends Component {
 
   state = {
-    startUrl: "http://localhost:3001",
+    startUrl: config.startUrl,
     redirect: false,
     posts: [],
     showPopup: false,
@@ -21,6 +22,7 @@ class LatestPosts extends Component {
       "TO MAPPERS": "map",
       "TO DEVS": "dev",
       "OTHER": "other",
+      "DONE": "done"
     },
 
   }

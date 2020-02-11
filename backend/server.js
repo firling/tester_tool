@@ -116,7 +116,6 @@ async function createServer () {
         message: "Authentication successful",
         token
       })
-      //res.cookie('token', token, { httpOnly: true }).sendStatus(200);
     }
 
   })
@@ -271,6 +270,14 @@ async function createServer () {
     res.json({"success": true});
   });
 
+  app.post('/markPost', withAuth, async function(req, res) {
+    const { id, value } = req.body;
+    var query = `update sub_com set mark=\'${value}\' where id=${id}`;
+    await makeDbQuery(query);
+
+    res.json({"success": true});
+  });
+
   app.post('/deleteCom', withAuth, async function(req, res) {
     const { com_id } = req.body;
 
@@ -290,7 +297,7 @@ async function createServer () {
   app.get('/getComs', withAuth, async function(req, res) {
     const { post_id } = req.query;
 
-    const query = `select sub_com.id, username, com, created_at from sub_com, login where post_id=\'${post_id}\' and sub_com.user_id=login.id order by id desc`
+    const query = `select sub_com.id, username, com, mark, created_at from sub_com, login where post_id=\'${post_id}\' and sub_com.user_id=login.id order by id desc`
     const result = await makeDbQuery(query);
 
     const arrResult = [];
@@ -353,7 +360,34 @@ async function createServer () {
     })
 
     res.json({"result": arrResult3});
-  })
+  });
+
+  app.get('/getPostComUser', withAuth, async function(req, res) {
+    const { username } = req.query;
+    const result = await makeDbQuery(`select post.id, title, message, to_x, user_id, created_at, username from post, login where post.user_id=login.id and username=\'${username}\' order by created_at desc`);
+    const arrResult = [];
+    result.forEach((elem, i) => {
+      elem.image = ImgB64[elem.id]
+      arrResult.push(elem);
+    });
+
+    const query = `select sub_com.id, username, com, title, sub_com.created_at, post_id from sub_com, login, post where sub_com.user_id=login.id and sub_com.post_id=post.id and username=\'${username}\' order by sub_com.created_at desc`
+    const result2 = await makeDbQuery(query);
+
+    const arrResult2 = [];
+    result2.forEach((elem, i) => {
+      elem.image = ImgComB64[elem.id]
+      arrResult2.push(elem);
+    });
+
+    const arrResult3 = arrResult.concat(arrResult2);
+
+    arrResult3.sort(function(a, b) {
+      return moment(b.created_at).unix() - moment(a.created_at).unix();
+    })
+
+    res.json({"result": arrResult3});
+  });
 
   app.post('/checkToken', withAuth, function(req, res) {
     res.sendStatus(200);

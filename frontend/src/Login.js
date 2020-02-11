@@ -4,11 +4,12 @@ import { withRouter } from "react-router-dom";
 import axios from "axios";
 import './App.css';
 import Firling from './img/firling.png'
+import config from "./conf/conf.js"
 
 class Login extends Component {
 
     state = {
-      startUrl: "http://localhost:3001",
+      startUrl: config.startUrl,
       redirect: false,
       messageError: "",
       username: "",

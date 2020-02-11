@@ -97,6 +97,9 @@
 .color-cat .dev{
   color: #ff1c1c;
 }
+.color-cat .done{
+  color: #48c774;
+}
 
 .back-color-cat .test{
   background-color: #f5695f!important;
@@ -124,6 +127,12 @@
 }
 .back-color-cat .other{
   background-color: rgba(255, 255, 255, 0.8)!important;
+  padding: 2px;
+  border: 1px solid white;
+  border-radius: 5px;
+}
+.back-color-cat .done{
+  background-color: #48c774!important;
   padding: 2px;
   border: 1px solid white;
   border-radius: 5px;
@@ -205,4 +214,18 @@
 
 .post-com-box:not(:last-child) {
   margin-bottom: 1.5rem;
+}
+
+.label-mark-red {
+  float: right;
+  color: white;
+  background-color: #f14668;
+  padding: 0.5rem;
+}
+
+.label-mark-green {
+  float: right;
+  color: white;
+  background-color: #48c774;
+  padding: 0.5rem;
 }

@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 import io from 'socket.io-client';
+import config from "./conf/conf.js"
 
-const socket = io("ws://localhost:3001", { path: "/ws" });
+const socket = io(config.socket, { path: "/ws" });
 
 class Popup extends Component {
 
   state = {
-    startUrl: "http://localhost:3001",
+    startUrl: config.startUrl,
     username: "",
     post: {},
     com: [],
@@ -18,6 +19,7 @@ class Popup extends Component {
       "TO MAPPERS": "map",
       "TO DEVS": "dev",
       "OTHER": "other",
+      "DONE": "done"
     },
     is_editing: false,
     imageCreate: "",
@@ -169,6 +171,17 @@ class Popup extends Component {
     this.setState({ com })
   }
 
+  markCom = (index, value) => {
+    var {com} = this.state;
+    axios.post(`${this.state.startUrl}/markPost`, {
+      token: localStorage.token,
+      id: com[index].id,
+      value: value
+    })
+    com[index].mark = value;
+    this.setState({ com })
+  }
+
   changeMessageCom = (e, i) => {
     var { com } = this.state;
     com[i].com = e.target.value;
@@ -296,6 +309,7 @@ class Popup extends Component {
                               <option className="map" selected={this.state.post.to_x == "TO MAPPERS"}>TO MAPPERS</option>
                               <option className="dev" selected={this.state.post.to_x == "TO DEVS"}>TO DEVS</option>
                               <option className="other" selected={this.state.post.to_x == "OTHER"}>OTHER</option>
+                              <option className="done" selected={this.state.post.to_x == "DONE"}>DONE</option>
                             </select>
                           </div>
                         </div>
@@ -349,31 +363,37 @@ class Popup extends Component {
             ) : null
           }
           <div className="block container">
-            <div className="field">
-              <label className="label">Write a sub comment here :</label>
-              <div className="control">
-                <textarea className="textarea" placeholder="Message" onPaste={(e) => this.onPaste(e, "com")} value={this.state.text} onChange={this.changeComMessage}></textarea>
-              </div>
-              <div className="control columns is-vcentered" style={{marginTop: "3px"}}>
-                <div className="column">
-                  <button
-                    className="button is-danger"
-                    onClick={this.delImageCreate}
-                    disabled={this.state.imageCreate == ""}
-                  >Delete Image</button>
-                </div>
-                <div className="column is-four-fifths">
-                  <div className="container box has-text-centered" onPaste={(e) => this.onPaste(e, "com")}>
-                    {
-                      this.state.imageCreate != "" ? (
-                        <img src={this.state.imageCreate} style={{maxHeight: "20rem"}}/>
-                      ) : <h4 className="title is-4" style={{color: "black"}}>Your pasted image</h4>
-                    }
-                  </div>
-                </div>
-              </div>
-              <button className="button is-info" style={{marginTop: "3px"}} onClick={this.createCom} disabled={this.state.text == ""}>New message</button>
-            </div>
+            {
+               this.state.post.to_x == "DONE" ? (
+                 <div/>
+               ) : (
+                 <div className="field">
+                   <label className="label">Write a sub comment here :</label>
+                   <div className="control">
+                     <textarea className="textarea" placeholder="Message" onPaste={(e) => this.onPaste(e, "com")} value={this.state.text} onChange={this.changeComMessage}></textarea>
+                   </div>
+                   <div className="control columns is-vcentered" style={{marginTop: "3px"}}>
+                     <div className="column">
+                       <button
+                         className="button is-danger"
+                         onClick={this.delImageCreate}
+                         disabled={this.state.imageCreate == ""}
+                       >Delete Image</button>
+                     </div>
+                     <div className="column is-four-fifths">
+                       <div className="container box has-text-centered" onPaste={(e) => this.onPaste(e, "com")}>
+                         {
+                           this.state.imageCreate != "" ? (
+                             <img src={this.state.imageCreate} style={{maxHeight: "20rem"}}/>
+                           ) : <h4 className="title is-4" style={{color: "black"}}>Your pasted image</h4>
+                         }
+                       </div>
+                     </div>
+                   </div>
+                   <button className="button is-info" style={{marginTop: "3px"}} onClick={this.createCom} disabled={this.state.text == ""}>New message</button>
+                 </div>
+               )
+            }
           </div>
 
           <div className="block box container background-transparent" style={{marginBottom: "2rem"}}>
@@ -424,6 +444,13 @@ class Popup extends Component {
                       }
                       <button className="button is-warning sub-com-button-edit" disabled={this.state.username != elt.username} onClick={() => this.editCom(i)}>edit</button>
                       <p className="subtitle is-right">Created at {elt.created_at.replace('T', ' ').replace('.000Z', '')}</p>
+                      <button className="button is-success" onClick={() => this.markCom(i, "V")} disabled={elt.mark == "V"}>Mark as V</button>
+                      <button className="button is-danger" style={{marginLeft: "1rem"}} onClick={() => this.markCom(i, "X")} disabled={elt.mark == "X"}>Mark as X</button>
+                      {
+                        elt.mark ? (
+                          <label className={`label-mark-${elt.mark == "V" ? "green" : "red"}`}>Marked as {elt.mark}</label>
+                        ) : null
+                      }
                     </div>
                   )
                 ))

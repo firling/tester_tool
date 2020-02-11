@@ -14,11 +14,12 @@ import CreatePost from "./CreatePost";
 import MyPosts from "./MyPosts";
 import LatestPosts from "./LatestPosts";
 import UserLogs from "./UserLogs";
+import config from "./conf/conf.js"
 
 class App extends Component {
 
   state = {
-    startUrl: "http://localhost:3001",
+    startUrl: config.startUrl,
     redirect: false,
     redirectAfterLogin: false,
     username: "",

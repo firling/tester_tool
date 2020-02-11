@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
 import axios from "axios";
 import './App.css';
+import config from "./conf/conf.js"
 
 class Home extends Component {
 
   state = {
-    startUrl: "http://localhost:3001",
+    startUrl: config.startUrl,
     redirect: false,
     rank: [],
     rankObj: {},
@@ -27,7 +28,7 @@ class Home extends Component {
         this.setState({ users: res.data, usersNew: obj })
       })
       .catch( err => {
-        console.log("Error while getting users.")
+        console.log("Error while getting users.", err)
       })
   }
 
@@ -54,9 +55,9 @@ class Home extends Component {
         this.setState({ rank: res.data, rankObj: obj })
       })
       .catch( err => {
-        console.log("Error while getting ranks")
+        console.log("Error while getting ranks", err)
       })
-      this.getAllUser();
+    this.getAllUser();
   }
 
   update = (id) => {
@@ -183,17 +184,19 @@ class Home extends Component {
                     </td>
                     <td>
                       {
-                        !this.state.usersNew[elt.id].is_updating ? this.state.rankObj[this.state.usersNew[elt.id].rank_id].name : (
-                          <div className="select is-info">
-                            <select onChange={(e) => this.changeRankUpdating(e, elt.id)}>
-                              {
-                                this.state.rank.map((elem, index) => (
-                                  <option id={elem.id} selected={elem.id == this.state.usersNew[elt.id].rank_id}>{elem.name}</option>
-                                ))
-                              }
-                            </select>
-                          </div>
-                        )
+                        this.state.rankObj.length > 0 && this.state.usersNew.length > 0 ? (
+                          !this.state.usersNew[elt.id].is_updating ? this.state.rankObj[this.state.usersNew[elt.id].rank_id].name : (
+                            <div className="select is-info">
+                              <select onChange={(e) => this.changeRankUpdating(e, elt.id)}>
+                                {
+                                  this.state.rank.map((elem, index) => (
+                                    <option id={elem.id} selected={elem.id == this.state.usersNew[elt.id].rank_id}>{elem.name}</option>
+                                  ))
+                                }
+                              </select>
+                            </div>
+                          )
+                        ) : null
                       }
                     </td>
                     <td>
