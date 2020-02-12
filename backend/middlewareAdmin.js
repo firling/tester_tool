@@ -26,6 +26,8 @@ const withAuthAdmin = function(req, res, next) {
         } else {
           if (result[0].is_admin != 1) {
             res.status(401).send('Unauthorized: You\'re not an admin.');
+          } else if(result[0].banned == 1) {
+            res.status(401).send('Unauthorized: Banned');
           }
           req.username = username
           next();

@@ -195,6 +195,10 @@
 .chat-message p, .chat-message label{
   color: white;
 }
+.chat-message p {
+  overflow: hidden;
+}
+
 .chat-date{
   margin-left: 5px;
   font-size: 70%;

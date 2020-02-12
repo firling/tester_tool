@@ -106,6 +106,12 @@ async function createServer () {
         .json({
         error: 'Incorrect password'
       });
+    } else if (result[0].banned == 1) {
+      console.log("Banned user")
+      res.status(401)
+        .json({
+        error: 'Banned'
+      });
     } else {
       const payload = { username };
       const token = jwt.sign(payload, secret, {

@@ -21,6 +21,8 @@ const withAuth = function(req, res, next) {
         var result = await makeDbQuery(`select * from login where username=\'${req.username}\'`)
         if (!result[0]){
           res.status(401).send('Unauthorized: Your Username Changed.');
+        } else if(result[0].banned == 1) {
+          res.status(401).send('Unauthorized: Banned');
         }
         next();
       }
