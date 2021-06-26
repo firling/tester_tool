@@ -1,6 +1,6 @@
 Tester tool for the Pokemon Revolution Online game
 
-## How to make it works for production
+## Make it works for development 
 
 Go into the ./frontend folder.<br />
 Then run:
@@ -23,13 +23,13 @@ Then run:
 Will created the server for the 3001 port.<br />
 If you make change, you'll have to stop it and recreate it with the same command.
 
-## How to make it works when uploaded online
+## Make it works for production
 
 For the frontend part:
 
 ### `npm run build`
 
-Will create a folder ./build that you can put directly in an apache server (for example) to make it works
+Will create a folder ./build that you can put directly in a web server
 
 **_______________________________________________________**
 
@@ -37,4 +37,8 @@ For the backend part:
 
 ### `Docker`
 
-Use docker to make it works in background.
+You can use either docker with a dockerfile or docker-compose
+
+### `pm2`
+
+You can also use pm2 by using the command `pm2 start server.js`

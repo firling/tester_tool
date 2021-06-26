@@ -4,7 +4,7 @@ import axios from "axios";
 import './App.css';
 import config from "./conf/conf.js"
 
-class Home extends Component {
+class ManageUser extends Component {
 
   state = {
     startUrl: config.startUrl,
@@ -33,18 +33,6 @@ class Home extends Component {
   }
 
   async componentDidMount () {
-    axios.post(`${this.state.startUrl}/checkTokenAdmin`, {
-      token: localStorage.token
-    })
-      .then( res => {
-        if (res.status !== 200) {
-          this.setState({ redirect: true })
-        }
-      })
-      .catch(err => {
-        this.setState({ redirect: true })
-      })
-
     axios.get(`${this.state.startUrl}/getAllRank`)
       .then( res => {
         this.setState({ rank: res.data })
@@ -56,6 +44,18 @@ class Home extends Component {
       })
       .catch( err => {
         console.log("Error while getting ranks", err)
+      })
+
+    axios.post(`${this.state.startUrl}/checkTokenAdmin`, {
+      token: localStorage.token
+    })
+      .then( res => {
+        if (res.status !== 200) {
+          this.setState({ redirect: true })
+        }
+      })
+      .catch(err => {
+        this.setState({ redirect: true })
       })
     this.getAllUser();
   }
@@ -184,7 +184,7 @@ class Home extends Component {
                     </td>
                     <td>
                       {
-                        this.state.rankObj.length > 0 && this.state.usersNew.length > 0 ? (
+                        Object.keys(this.state.rankObj).length > 0 && Object.keys(this.state.usersNew).length > 0 ? (
                           !this.state.usersNew[elt.id].is_updating ? this.state.rankObj[this.state.usersNew[elt.id].rank_id].name : (
                             <div className="select is-info">
                               <select onChange={(e) => this.changeRankUpdating(e, elt.id)}>
